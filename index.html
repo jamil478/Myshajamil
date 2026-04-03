@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jamil & Mysha | Royal Roulette</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --royal-red: #4a0404;
+            --gold: linear-gradient(145deg, #f9f295, #e0aa3e, #b88a44, #d4af37);
+            --gold-glow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, #1a0202 0%, #000 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        /* Cinematic Background Elements */
+        .bg-overlay {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/black-linen.png');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .main-container {
+            position: relative;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2.5rem;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* The Luxury Wheel */
+        .wheel-wrapper {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            border: 15px solid #111;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), var(--gold-glow);
+        }
+
+        #wheelCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        /* The Gold Pointer */
+        .pointer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 50px;
+            background: var(--gold);
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 20;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+        }
+
+        /* Center Spin Button */
+        .spin-trigger {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: var(--gold);
+            border-radius: 50%;
+            border: 5px solid #111;
+            cursor: pointer;
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #000;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+
+        .spin-trigger:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: var(--gold-glow);
+        }
+
+        #result-text {
+            margin-top: 40px;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 2rem;
+            color: #d4af37;
+            min-height: 40px;
+            text-shadow: var(--gold-glow);
+        }
+
+        /* Floating Particles */
+        .sparkle {
+            position: absolute;
+            background: #d4af37;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            from { transform: translateY(100vh) rotate(0deg); }
+            to { transform: translateY(-10vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-overlay"></div>
+
+<div class="main-container">
+    <h1>JAMIL & MYSHA</h1>
+    
+    <div class="wheel-wrapper">
+        <div class="pointer"></div>
+        <canvas id="wheelCanvas" width="800" height="800"></canvas>
+        <div class="spin-trigger" onclick="spinWheel()">SPIN</div>
+    </div>
+
+    <div id="result-text"></div>
+</div>
+
+<script>
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const names = ["JAMIL", "MYSHA"];
+    let currentRotation = 0;
+    let isSpinning = false;
+
+    // চাকা আঁকার ফাংশন
+    function drawWheel() {
+        const arc = Math.PI; // যেহেতু মাত্র ২ জন, তাই ১৮০ ডিগ্রী করে
+        ctx.clearRect(0, 0, 800, 800);
+
+        names.forEach((name, i) => {
+            const angle = i * arc;
+            
+            // স্লাইস ডিজাইন
+            ctx.beginPath();
+            ctx.fillStyle = i === 0 ? "#2a0202" : "#4a0404"; // Jamil Deep, Mysha Ruby
+            ctx.strokeStyle = "#d4af37";
+            ctx.lineWidth = 10;
+            ctx.moveTo(400, 400);
+            ctx.arc(400, 400, 380, angle, angle + arc);
+            ctx.fill();
+            ctx.stroke();
+
+            // নাম লেখা
+            ctx.save();
+            ctx.translate(400, 400);
+            ctx.rotate(angle + arc / 2);
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#d4af37";
+            ctx.font = "bold 60px 'Cinzel Decorative'";
+            ctx.fillText(name, 220, 20);
+            ctx.restore();
+        });
+    }
+
+    function spinWheel() {
+        if (isSpinning) return;
+        isSpinning = true;
+        
+        const resText = document.getElementById('result-text');
+        resText.innerText = "CHOSING...";
+
+        // র্যান্ডম স্পিন (৫ থেকে ১০ বার ঘুরবে)
+        const extraSpins = (Math.floor(Math.random() * 5) + 5) * 360;
+        const randomStop = Math.floor(Math.random() * 360);
+        currentRotation += extraSpins + randomStop;
+
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+        setTimeout(() => {
+            isSpinning = false;
+            
+            // রেজাল্ট ক্যালকুলেশন
+            const actualDeg = currentRotation % 360;
+            // যেহেতু ২টি স্লাইস, তাই ১৮০ ডিগ্রীর হিসাব
+            // পয়েন্টার উপরে (২৭০ ডিগ্রী), তাই সেই অনুযায়ী ইনডেক্স বের করা
+            const index = Math.floor(((360 - actualDeg + 270) % 360) / 180);
+            resText.innerText = names[index];
+        }, 5000);
+    }
+
+    // ব্যাকগ্রাউন্ডে কিছু গোল্ডেন কণা যোগ করা
+    for(let i=0; i<30; i++) {
+        let sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.width = Math.random() * 4 + 'px';
+        sparkle.style.height = sparkle.style.width;
+        sparkle.style.left = Math.random() * 100 + 'vw';
+        sparkle.style.animationDelay = Math.random() * 10 + 's';
+        document.body.appendChild(sparkle);
+    }
+
+    drawWheel();
+</script>
+
+</body>
+</html>
